@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Wi-Fi Fix</string>
+
+    <string name="heading_status">Status</string>
+    <string name="heading_diag">Diagnostics</string>
+    <string name="heading_events">Recent events</string>
+
+    <string name="line_wifi">Wi-Fi radio: %1$s</string>
+    <string name="line_guard">Watchdog: %1$s — %2$s (tier: %3$s)</string>
+    <string name="line_snooze">Snooze: %1$s</string>
+    <string name="line_stats">Outages: %1$d · repaired: %2$d · gave up: %3$d · last outage: %4$s</string>
+    <string name="line_android">Android: %1$s</string>
+    <string name="line_targetsdk">targetSdk: %1$d (must be under 29)</string>
+    <string name="line_appop">change_wifi_state app-op: %1$s</string>
+    <string name="line_airplane">Airplane mode: %1$s</string>
+    <string name="line_standby">low_power_standby_enabled: %1$s</string>
+    <string name="line_owner">Device owner: %1$s</string>
+    <string name="line_probe">Last probe — %1$s</string>
+
+    <string name="guard_off">Watchdog: stopped</string>
+    <string name="guard_starting">Watchdog: starting…</string>
+    <string name="tier_none">none available</string>
+    <string name="no_events">Nothing logged yet.</string>
+    <string name="diag_warning">Something here will stop the repair working — see the README.</string>
+
+    <string name="btn_start">Start watchdog</string>
+    <string name="btn_stop">Stop watchdog</string>
+    <string name="btn_probe">Check capability</string>
+    <string name="btn_test">Test now</string>
+    <string name="btn_snooze">Snooze…</string>
+    <string name="btn_clear">Clear event log</string>
+
+    <string name="probe_title">Capability check</string>
+    <string name="probe_needs_wifi_on">Turn Wi-Fi on first — this check only runs when the radio is already on, so it can never leave you offline.</string>
+    <string name="probe_accepted">The framework accepted the call. On Android 13 and later a "true" can also mean a confirmation dialog was posted instead, so the watchdog still waits for the radio to actually report ENABLED before calling it a success.</string>
+    <string name="probe_rejected">The framework rejected the call. Tier 1 will not work on this device — check targetSdk and the app-op above.</string>
+
+    <string name="test_title">Test the fix</string>
+    <string name="test_warning">This switches Wi-Fi off on purpose and lets the watchdog put it back.\n\nIf the repair fails you will need the remote to turn Wi-Fi back on, and ADB will be unreachable until you do.\n\nA separate one-minute alarm is armed first as a safety net.</string>
+    <string name="test_confirm">Turn Wi-Fi off</string>
+
+    <string name="snooze_title">Pause the watchdog</string>
+    <string-array name="snooze_labels">
+        <item>Resume now</item>
+        <item>30 minutes</item>
+        <item>2 hours</item>
+        <item>Until reboot</item>
+    </string-array>
+</resources>
