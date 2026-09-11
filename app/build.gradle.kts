@@ -21,7 +21,7 @@ android {
         targetSdk = 28
 
         versionCode = 1
-        versionName = "0.1"
+        versionName = "1.0.0"
     }
 
     signingConfigs {
@@ -65,6 +65,15 @@ android {
     }
 
     kotlinOptions { jvmTarget = "17" }
+}
+
+// Keep the sideloaded release asset easy to identify outside Gradle's default
+// output naming. Debug builds retain Gradle's default name.
+val releaseApk by tasks.registering(Copy::class) {
+    dependsOn("assembleRelease")
+    from(layout.buildDirectory.file("outputs/apk/release/app-release.apk"))
+    into(layout.buildDirectory.dir("outputs/release"))
+    rename { "WifiFix.apk" }
 }
 
 // CI is the only place these tests run, so make the results legible there.

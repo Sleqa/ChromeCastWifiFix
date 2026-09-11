@@ -1,11 +1,33 @@
-# ChromeCastWifiFix
+# WiFi Fix
 
-An Android TV app for Chromecast / Google TV devices whose **Wi-Fi toggle switches
-itself off**. Not a dropout, not a roaming failure — the radio is switched off and
-the device sits there offline until someone picks up the remote.
+WiFi Fix is a small sideloaded Android TV app for Chromecast with Google TV and
+other Android TV devices whose **Wi-Fi toggle switches itself off**. It is not a
+fix for weak signal, roaming, or ordinary connection drops: it watches for the
+radio itself being disabled, then attempts to turn it back on locally.
 
 The app runs a small foreground service that watches the radio and turns it back
 on, logging every outage so you can find out how often the bug actually fires.
+
+## Release and compatibility
+
+- Current release: **v1.0.0**
+- Download: the `WifiFix.apk` asset on the repository's Releases page
+- Devices: Android TV / Google TV running Android 8 (API 26) or later
+- Distribution: direct sideloading only; this app is not intended for Google Play
+- Data: no account, analytics, cloud service, or network permission is used.
+  Event history stays on the device.
+
+### Quick start
+
+1. Download `WifiFix.apk` from the latest release and install it on the TV.
+2. Open **WiFi Fix** from the Google TV app launcher.
+3. With Wi-Fi already on, select **Check capability**. This is safe: it only
+   requests Wi-Fi to remain enabled.
+4. Leave the guard running. The app monitors the radio, records repairs, and
+   resumes after device reboot.
+
+The **Test now** button intentionally turns Wi-Fi off and is the only end-to-end
+test. Use it only when the physical remote is available as a fallback.
 
 > **Why this has to run on the device.** Once Wi-Fi is off, nothing off-device can
 > reach the Chromecast — no cloud service, no push, no cron job on a PC running
@@ -24,8 +46,9 @@ Either of these could be the real cause, and would make the app unnecessary:
    ```
    adb shell settings get global low_power_standby_enabled
    ```
-   The app shows this value on its Diagnostics panel, so you can correlate it
-   against the event log either way.
+   On Android 12 and newer this setting is restricted to system apps, so WiFi
+   Fix displays `restricted` rather than attempting to read it. The ADB command
+   above remains the reliable way to inspect it.
 
 ---
 
@@ -87,19 +110,19 @@ reboot) on the status screen.
 
 ## Install
 
-Grab the APK from the latest [Actions run](../../actions) (artifact
-`chromecastwififix-apk`) or from a release, then:
+Download `WifiFix.apk` from the latest release (or the `WifiFix` artifact from
+the latest [Actions run](../../actions)), then:
 
 ```bash
 adb connect <chromecast-ip>:<port>     # accept the prompt on the TV
-adb install -r app-release.apk
+adb install -r WifiFix.apk
 ```
 
 Open **Wi-Fi Fix** from the Google TV home screen. The watchdog starts on launch
 and again on every boot.
 
 > On an Android 15+ host, `adb install` may refuse a low-targetSdk APK. Use
-> `adb install --bypass-low-target-sdk-block -r app-release.apk`.
+> `adb install --bypass-low-target-sdk-block -r WifiFix.apk`.
 
 ### First thing to do: press **Check capability**
 
@@ -128,7 +151,7 @@ trip to the remote — the confirmation dialog says so.
 | `targetSdk` | Must be under 29 or the Wi-Fi call is rejected outright |
 | `change_wifi_state app-op` | Can be set to `IGNORED` independently of the permission grant, which produces an otherwise inexplicable `false` |
 | `Airplane mode` | The framework rejects `setWifiEnabled` in airplane mode; the watchdog pauses instead of burning its retry budget |
-| `low_power_standby_enabled` | Prime suspect for a TV dongle whose radio switches itself off |
+| `low_power_standby_enabled` | Prime suspect for a TV dongle whose radio switches itself off; shown as `restricted` where Android hides it from apps |
 | `Device owner` | Whether Tier 2 is provisioned |
 
 ---
@@ -177,7 +200,7 @@ costs nothing.
 
 ```bash
 ./gradlew test            # the state machine, as a plain JVM test suite
-./gradlew assembleRelease
+./gradlew releaseApk       # app/build/outputs/release/WifiFix.apk
 ```
 
 CI builds on every push and uploads the APK as an artifact. With no signing
@@ -217,7 +240,7 @@ Also worth checking:
 
 ```bash
 adb reboot                      # service should return without opening the app
-adb install -r app-release.apk  # MY_PACKAGE_REPLACED should restart it
+adb install -r WifiFix.apk      # MY_PACKAGE_REPLACED should restart it
 ```
 
 `adb shell am force-stop` is **not** a useful test: a force-stopped app has its

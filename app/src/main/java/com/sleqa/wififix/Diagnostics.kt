@@ -33,8 +33,13 @@ data class Diagnostics(
                 // A prime suspect for a TV dongle whose radio switches itself
                 // off: Android 13+ low power standby can cut networking when the
                 // device sleeps.
-                lowPowerStandby = Settings.Global
-                    .getString(cr, "low_power_standby_enabled") ?: "unset",
+                // Android 12+ restricts some hidden Settings.Global keys to
+                // system apps.  This is diagnostic information only, so a
+                // restricted read must never prevent the control screen from
+                // opening.
+                lowPowerStandby = runCatching {
+                    Settings.Global.getString(cr, "low_power_standby_enabled") ?: "unset"
+                }.getOrDefault("restricted"),
                 deviceOwner = isDeviceOwner(ctx),
                 androidRelease = "${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})",
             )
